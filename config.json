@@ -6,12 +6,13 @@
 	},
 	"chans": ["#Giffgaff"],
 	"bots": [
-		"otherbot!bla@blablabla"
+		["otherbot", "blablabla"]
+	],
+	"owners": [
+		["callumacrae", "69.175.32.132"]
 	],
 	"ops": [
-		"nub!~efnet@lynxphp.com"
 	],
 	"voice": [
-
 	]
 }

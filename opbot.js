@@ -52,24 +52,54 @@ socket.on('data', function (data) {
 	data = data.split('\r\n');
 	for (i = 0; i < data.length; i++) {
 		data[i] && (function (data) {
-			var info;
+			var info, mode;
 
 			// Debug:
 			console.log(data);
 
 			if (info = /^PING :(.+)$/.exec(data)) {
 				socket.write('PONG :' + info[1] + '\n', 'ascii');
-			} else if (info = /^:([^ ]+)![^ ]+@[^ ]+ PRIVMSG ([^ ]+) :!([^ ]+)(?: ([^ ]+))?$/.exec(data)) {
-				switch (info[3].toLowerCase()) {
+			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) PRIVMSG ([^ ]+) :!([^ ]+)(?: ([^ ]+))?$/.exec(data)) {
+				switch (info[4].toLowerCase()) {
 					case 'ping':
-						socket.write('PRIVMSG ' + info[2] + ' :pong\n', 'ascii');
+						socket.write('PRIVMSG ' + info[3] + ' :pong\n', 'ascii');
 						break;
 
+					case 'deop':
+					case 'devoice':
 					case 'op':
-						socket.write('MODE ' + info[2] + ' +o ' + info[1] + '\n', 'ascii');
+					case 'voice':
+						if (is_op(info[1], info[2])) {
+							mode = ({deop: '-o', op: '+o', devoice: '-v', voice: '+v'})[info[4].toLowerCase()];
+							socket.write('MODE ' + info[3] + ' ' + mode + ' ' + (info[5] || info[1]) + '\n', 'ascii');
+						}
 						break;
 				}
 			}
 		})(data[i]);
 	}
 });
+
+
+/**
+ * Returns true if user is bot op.
+ *
+ * @param string nick The nick of the user.
+ * @param string host The vhost of the user.
+ */
+function is_op(nick, host) {
+	var i = 0,
+		ops = config.ops,
+		owners = config.owners,
+		length = (ops.length > owners.length) ? ops.length : owners.length;
+	for (; i < length; i++) {
+		if (typeof ops[i] !== 'undefined' && ops[i][0] === nick && ops[i][1] === host) {
+			return true;
+		}
+		if (typeof owners[i] !== 'undefined' && owners[i][0] === nick && owners[i][1] === host) {
+			return true;
+		}
+	}
+
+	return false;
+}
