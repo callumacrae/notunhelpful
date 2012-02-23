@@ -81,6 +81,10 @@ socket.on('data', function (data) {
 							if (info[5] && !is_op(info[5][1], info[5][2])) {
 								config.ops.push([info[5][1], info[5][2]]);
 								socket.write('MODE ' + info[3] + ' +o ' + info[5][1] + '\n', 'ascii');
+
+								flushConfig(function () {
+									socket.write('PRIVMSG ' + info[3] + ' :Successfully added ' + info[5][1] + ' as op, and flushed configuration.');
+								});
 							}
 						}
 						break;
@@ -112,4 +116,12 @@ function is_op(nick, host) {
 	}
 
 	return false;
+}
+
+/**
+ * Flushes the config back to config.json.
+ */
+function flushConfig(cb) {
+	var conf = JSON.stringify(config);
+	fs.writeFileSync('config.json', 'utf8', cb);
 }
