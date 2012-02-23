@@ -52,7 +52,7 @@ socket.on('data', function (data) {
 	data = data.split('\r\n');
 	for (i = 0; i < data.length; i++) {
 		data[i] && (function (data) {
-			var info, mode;
+			var info, mode, op;
 
 			// Debug:
 			console.log(data);
@@ -76,14 +76,16 @@ socket.on('data', function (data) {
 						break;
 
 					case '+op':
+					case '+voice':
 						if (isOwner(info[1], info[2]) && info[5]) {
 							info[5] = /^([^ ]+)![^ ]+@([^ ]+)$/.exec(info[5]);
-							if (info[5] && !isOp(info[5][1], info[5][2])) {
-								config.ops.push([info[5][1], info[5][2]]);
-								socket.write('MODE ' + info[3] + ' +o ' + info[5][1] + '\n', 'ascii');
+							op = info[4].toLowerCase() === '+op';
+							if (info[5] && ((op && !isOp(info[5][1], info[5][2])) || (!op && !isVoice(info[5][1], info[5][2])))) {
+								config[(op) ? 'ops' : 'voice'].push([info[5][1], info[5][2]]);
+								socket.write('MODE ' + info[3] + (op ? ' +o ' : ' +v ') + info[5][1] + '\n', 'ascii');
 
 								flushConfig(function () {
-									socket.write('PRIVMSG ' + info[3] + ' :Successfully added ' + info[5][1] + ' as op, and flushed configuration.');
+									socket.write('PRIVMSG ' + info[3] + ' :Successfully added ' + info[5][1] + ', and flushed configuration.');
 								});
 							}
 						}
@@ -125,6 +127,22 @@ function isOwner(nick, host) {
 	}
 
 	return false;
+}
+
+/**
+ * Returns true if user is a bot voicee.
+ *
+ * @param string nick The nick of the user.
+ * @param string host The vhost of the user.
+ */
+function isVoice(nick, host) {
+	for (var i = 0; i < config.voice.length; i++) {
+		if (config.voice[i][0] === nick && config.voice[i][1] === host) {
+			return true;
+		}
+	}
+
+	return isOp(nick, host);
 }
 
 /**
