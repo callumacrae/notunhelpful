@@ -74,6 +74,16 @@ socket.on('data', function (data) {
 							socket.write('MODE ' + info[3] + ' ' + mode + ' ' + (info[5] || info[1]) + '\n', 'ascii');
 						}
 						break;
+
+					case '+op':
+						if (is_op(info[1], info[2]) && info[5]) {
+							info[5] = /^([^ ]+)![^ ]+@([^ ]+)$/.exec(info[5]);
+							if (info[5] && !is_op(info[5][1], info[5][2])) {
+								config.ops.push([info[5][1], info[5][2]]);
+								socket.write('MODE ' + info[3] + ' +o ' + info[5][1] + '\n', 'ascii');
+							}
+						}
+						break;
 				}
 			}
 		})(data[i]);
