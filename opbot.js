@@ -102,20 +102,13 @@ socket.on('data', function (data) {
  * @param string host The vhost of the user.
  */
 function isOp(nick, host) {
-	var i = 0,
-		ops = config.ops,
-		owners = config.owners,
-		length = (ops.length > owners.length) ? ops.length : owners.length;
-	for (; i < length; i++) {
-		if (typeof ops[i] !== 'undefined' && ops[i][0] === nick && ops[i][1] === host) {
-			return true;
-		}
-		if (typeof owners[i] !== 'undefined' && owners[i][0] === nick && owners[i][1] === host) {
+	for (var i = 0; i < config.ops.length; i++) {
+		if (config.ops[i][0] === nick && config.ops[i][1] === host) {
 			return true;
 		}
 	}
 
-	return false;
+	return isOwner(nick, host);
 }
 
 /**
@@ -125,7 +118,7 @@ function isOp(nick, host) {
  * @param string host The vhost of the user.
  */
 function isOwner(nick, host) {
-	for (var i = 0; i < length; i++) {
+	for (var i = 0; i < config.owners.length; i++) {
 		if (config.owners[i][0] === nick && config.owners[i][1] === host) {
 			return true;
 		}
