@@ -80,7 +80,7 @@ socket.on('data', function (data) {
 						if (isOwner(info[1], info[2]) && info[5]) {
 							info[5] = /^([^ ]+)![^ ]+@([^ ]+)$/.exec(info[5]);
 							op = info[4].toLowerCase() === '+op';
-							if (info[5] && ((op && !isOp(info[5][1], info[5][2])) || (!op && !isVoice(info[5][1], info[5][2])))) {
+							if (info[5] && !isOp(info[5][1], info[5][2] && (op || !isVoice(info[5][1], info[5][2])))) {
 								config[(op) ? 'ops' : 'voice'].push([info[5][1], info[5][2]]);
 								socket.write('MODE ' + info[3] + (op ? ' +o ' : ' +v ') + info[5][1] + '\n', 'ascii');
 
