@@ -52,7 +52,7 @@ socket.on('data', function (data) {
 	data = data.split('\r\n');
 	for (i = 0; i < data.length; i++) {
 		data[i] && (function (data) {
-			var info, mode, op;
+			var info, mode, msg, op;
 
 			// Debug:
 			console.log(data);
@@ -89,6 +89,18 @@ socket.on('data', function (data) {
 								});
 							}
 						}
+						break;
+
+					case 'whoami':
+						var msg = 'PRIVMSG ' + info[3] + ' :You are ' + info[0].split(' ')[0] + '.';
+						if (isOwner(info[1], info[2])) {
+							msg += ' You are owner.';
+						} else if (isOp(info[1], info[2])) {
+							msg += ' You are op.';
+						} else if (isVoice(info[1], info[2])) {
+							msg += ' You are voiced.';
+						}
+						socket.write(msg + '\n', 'ascii');
 						break;
 				}
 			}
