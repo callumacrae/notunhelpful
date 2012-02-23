@@ -1,0 +1,17 @@
+{
+	"nick": "notunhelpful",
+	"server": {
+		"addr": "irc.freenode.net",
+		"port": 6667
+	},
+	"chans": ["#Giffgaff"],
+	"bots": [
+		"otherbot!bla@blablabla"
+	],
+	"ops": [
+		"nub!~efnet@lynxphp.com"
+	],
+	"voice": [
+
+	]
+}
