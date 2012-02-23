@@ -103,7 +103,14 @@ socket.on('data', function (data) {
 						socket.write(msg + '\n', 'ascii');
 						break;
 				}
+			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) JOIN ([^ ]+)$/) {
+				if (isOp(info[1], info[2]) || isBot(info[1], info[2])) {
+					socket.write('MODE ' + info[3] + ' +o ' + info[1] + '\n', 'ascii');
+				} else if (isVoice(info[1], info[2])) {
+					socket.write('MODE ' + info[3] + ' +v ' + info[1] + '\n', 'ascii');
+				}
 			}
+			// kick someone who tries to ban a bot - unless they're a bot themselves
 		})(data[i]);
 	}
 });
@@ -155,6 +162,22 @@ function isVoice(nick, host) {
 	}
 
 	return isOp(nick, host);
+}
+
+/**
+ * Returns true if user is another bot.
+ *
+ * @param string nick The nick of the user.
+ * @param string host The vhost of the user.
+ */
+function isBot(nick, host) {
+	for (var i = 0; i < config.voice.length; i++) {
+		if (config.bots[i][0] === nick && config.bots[i][1] === host) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
