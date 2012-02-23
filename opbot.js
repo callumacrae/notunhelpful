@@ -69,16 +69,16 @@ socket.on('data', function (data) {
 					case 'devoice':
 					case 'op':
 					case 'voice':
-						if (is_op(info[1], info[2])) {
+						if (isOp(info[1], info[2])) {
 							mode = ({deop: '-o', op: '+o', devoice: '-v', voice: '+v'})[info[4].toLowerCase()];
 							socket.write('MODE ' + info[3] + ' ' + mode + ' ' + (info[5] || info[1]) + '\n', 'ascii');
 						}
 						break;
 
 					case '+op':
-						if (is_op(info[1], info[2]) && info[5]) {
+						if (isOwner(info[1], info[2]) && info[5]) {
 							info[5] = /^([^ ]+)![^ ]+@([^ ]+)$/.exec(info[5]);
-							if (info[5] && !is_op(info[5][1], info[5][2])) {
+							if (info[5] && !isOp(info[5][1], info[5][2])) {
 								config.ops.push([info[5][1], info[5][2]]);
 								socket.write('MODE ' + info[3] + ' +o ' + info[5][1] + '\n', 'ascii');
 
@@ -96,12 +96,12 @@ socket.on('data', function (data) {
 
 
 /**
- * Returns true if user is bot op.
+ * Returns true if user is a bot op.
  *
  * @param string nick The nick of the user.
  * @param string host The vhost of the user.
  */
-function is_op(nick, host) {
+function isOp(nick, host) {
 	var i = 0,
 		ops = config.ops,
 		owners = config.owners,
@@ -119,9 +119,25 @@ function is_op(nick, host) {
 }
 
 /**
+ * Returns true if user is a bot owner.
+ *
+ * @param string nick The nick of the user.
+ * @param string host The vhost of the user.
+ */
+function isOwner(nick, host) {
+	for (var i = 0; i < length; i++) {
+		if (config.owners[i][0] === nick && config.owners[i][1] === host) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Flushes the config back to config.json.
  */
 function flushConfig(cb) {
 	var conf = JSON.stringify(config);
-	fs.writeFileSync('config.json', 'utf8', cb);
+	fs.writeFileSync('config.json', conf, 'ascii', cb);
 }
