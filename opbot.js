@@ -85,7 +85,7 @@ socket.on('data', function (data) {
 								socket.write('MODE ' + info[3] + (op ? ' +o ' : ' +v ') + info[5][1] + '\n', 'ascii');
 
 								flushConfig(function () {
-									socket.write('PRIVMSG ' + info[3] + ' :Successfully added ' + info[5][1] + ', and flushed configuration.');
+									socket.write('PRIVMSG ' + info[3] + ' :Successfully added ' + info[5][1] + ', and flushed configuration.\n', 'ascii');
 								});
 							}
 						}
@@ -150,5 +150,5 @@ function isVoice(nick, host) {
  */
 function flushConfig(cb) {
 	var conf = JSON.stringify(config);
-	fs.writeFileSync('config.json', conf, 'ascii', cb);
+	fs.writeFile('config.json', conf, cb);
 }
