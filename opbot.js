@@ -1,8 +1,9 @@
 var fs = require('fs'),
 	net = require('net'),
-	config, i, socket;
+	config, i, socket, users;
 
 config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+users = {};
 
 // Handle connect; send creds and join channels
 socket = new net.Socket();
@@ -103,12 +104,18 @@ socket.on('data', function (data) {
 						socket.write(msg + '\n', 'ascii');
 						break;
 				}
-			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) JOIN ([^ ]+)$/) {
+			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) JOIN ([^ ]+)$/.exec(data)) {
+				users[info[1].toLowerCase()] = info[2];
 				if (isOp(info[1], info[2]) || isBot(info[1], info[2])) {
 					socket.write('MODE ' + info[3] + ' +o ' + info[1] + '\n', 'ascii');
 				} else if (isVoice(info[1], info[2])) {
 					socket.write('MODE ' + info[3] + ' +v ' + info[1] + '\n', 'ascii');
 				}
+			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) NICK ([^ ]+)$/.exec(data)) {
+				if (users[info[1].toLowerCase()]) {
+					delete users[info[1].toLowerCase()];
+				}
+				users[info[3].toLowerCase()] = info[2];
 			}
 			// kick someone who tries to ban a bot - unless they're a bot themselves
 		})(data[i]);
