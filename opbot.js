@@ -116,8 +116,16 @@ socket.on('data', function (data) {
 					delete users[info[1].toLowerCase()];
 				}
 				users[info[3].toLowerCase()] = info[2];
+			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) KICK ([^ ]+) ([^ ]+) :/.exec(data)) {
+				if (info[4] === config.nick) {
+					socket.write('JOIN ' + info[3] + '\n', 'ascii');
+				} else if (!isBotOrOwner(info[1], info[2]) && isBotOrOwner(info[4])) {
+					socket.write('MODE ' + info[3] + ' -o ' + info[1] + '\n', 'ascii');
+					setTimeout(function () {
+						socket.write('KICK ' + info[3] + ' ' + info[1] + ' :lol\n', 'ascii');
+					}, 5000);
+				}
 			}
-			// kick someone who tries to ban a bot - unless they're a bot themselves
 		})(data[i]);
 	}
 });
@@ -130,6 +138,12 @@ socket.on('data', function (data) {
  * @param string host The vhost of the user.
  */
 function isOp(nick, host) {
+	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
+		host = users[nick.toLowerCase()];
+	} else {
+		return false;
+	}
+
 	for (var i = 0; i < config.ops.length; i++) {
 		if (config.ops[i][0] === nick && config.ops[i][1] === host) {
 			return true;
@@ -146,6 +160,12 @@ function isOp(nick, host) {
  * @param string host The vhost of the user.
  */
 function isOwner(nick, host) {
+	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
+		host = users[nick.toLowerCase()];
+	} else {
+		return false;
+	}
+
 	for (var i = 0; i < config.owners.length; i++) {
 		if (config.owners[i][0] === nick && config.owners[i][1] === host) {
 			return true;
@@ -162,6 +182,12 @@ function isOwner(nick, host) {
  * @param string host The vhost of the user.
  */
 function isVoice(nick, host) {
+	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
+		host = users[nick.toLowerCase()];
+	} else {
+		return false;
+	}
+
 	for (var i = 0; i < config.voice.length; i++) {
 		if (config.voice[i][0] === nick && config.voice[i][1] === host) {
 			return true;
@@ -178,6 +204,12 @@ function isVoice(nick, host) {
  * @param string host The vhost of the user.
  */
 function isBot(nick, host) {
+	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
+		host = users[nick.toLowerCase()];
+	} else {
+		return false;
+	}
+
 	for (var i = 0; i < config.voice.length; i++) {
 		if (config.bots[i][0] === nick && config.bots[i][1] === host) {
 			return true;
@@ -185,6 +217,16 @@ function isBot(nick, host) {
 	}
 
 	return false;
+}
+
+/**
+ * Returns true if user is either a bot or an owner.
+ *
+ * @param string nick The nick of the user.
+ * @param string host The vhost of the user.
+ */
+function isBotOrOwner(nick, host) {
+	return isBot(nick, host) || isOwner(nick, host);
 }
 
 /**
