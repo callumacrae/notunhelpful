@@ -92,6 +92,20 @@ socket.on('data', function (data) {
 						}
 						break;
 
+					case '+bot':
+						if (isOwner(info[1], info[2]) && info[5]) {
+							info[5] = /^([^ ]+)![^ ]+@([^ ]+)$/.exec(info[5]);
+							if (info[5] && !isBot(info[5][1], info[5][2])) {
+								config['bots'].push(info[5][1], info[5][2]);
+								socket.write('MODE ' + info[3] + ' +o ' + info[5][1] + '\n', 'ascii');
+
+								flushConfig(function () {
+									socket.write('PRIVMSG ' + info[3] + ' :Successfully added ' + info[5][1] + ', and flushed configuration.\n', 'ascii');
+								});
+							}
+						}
+						break;
+
 					case 'whoami':
 						var msg = 'PRIVMSG ' + info[3] + ' :You are ' + info[0].split(' ')[0] + '.';
 						if (isOwner(info[1], info[2])) {
