@@ -53,7 +53,7 @@ socket.on('data', function (data) {
 	data = data.split('\r\n');
 	for (i = 0; i < data.length; i++) {
 		data[i] && (function (data) {
-			var info, mode, msg, op;
+			var i, info, mode, msg, op;
 
 			// Debug:
 			console.log(data);
@@ -121,9 +121,20 @@ socket.on('data', function (data) {
 					socket.write('JOIN ' + info[3] + '\n', 'ascii');
 				} else if (!isBotOrOwner(info[1], info[2]) && isBotOrOwner(info[4])) {
 					socket.write('MODE ' + info[3] + ' -o ' + info[1] + '\n', 'ascii');
+					for (i = 0; i < config.ops.length; i++) {
+						if (config.ops[i][0] === info[1]) {
+							op = config.ops[i];
+							config.ops.splice(i, 1);
+						}
+					}
 					setTimeout(function () {
 						socket.write('KICK ' + info[3] + ' ' + info[1] + ' :lol\n', 'ascii');
 					}, 5000);
+					if (typeof op === 'object') {
+						setTimeout(function () {
+							config.ops.push(op);
+						}, 300000);
+					}
 				}
 			}
 		})(data[i]);
@@ -140,7 +151,7 @@ socket.on('data', function (data) {
 function isOp(nick, host) {
 	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
 		host = users[nick.toLowerCase()];
-	} else {
+	} else if (typeof host === 'undefined') {
 		return false;
 	}
 
@@ -162,7 +173,7 @@ function isOp(nick, host) {
 function isOwner(nick, host) {
 	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
 		host = users[nick.toLowerCase()];
-	} else {
+	} else if (typeof host === 'undefined') {
 		return false;
 	}
 
@@ -184,7 +195,7 @@ function isOwner(nick, host) {
 function isVoice(nick, host) {
 	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
 		host = users[nick.toLowerCase()];
-	} else {
+	} else if (typeof host === 'undefined') {
 		return false;
 	}
 
@@ -206,7 +217,7 @@ function isVoice(nick, host) {
 function isBot(nick, host) {
 	if (typeof host === 'undefined' && users[nick.toLowerCase()]) {
 		host = users[nick.toLowerCase()];
-	} else {
+	} else if (typeof host === 'undefined') {
 		return false;
 	}
 
