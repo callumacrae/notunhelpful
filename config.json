@@ -1,15 +1,15 @@
 {
-	"nick": "notunhelpful",
+	"nick": "bot1",
 	"server": {
-		"addr": "irc.freenode.net",
+		"addr": "irc.efnet.org",
 		"port": 6667
 	},
-	"chans": ["#Giffgaff"],
+	"chans": ["#trustnetwork"],
 	"bots": [
-		["otherbot", "blablabla"]
+		["bot1", "lynxphp.com"]
 	],
 	"owners": [
-		["callumacrae", "69.175.32.132"]
+		["nub", "69.175.32.132"]
 	],
 	"ops": [
 	],
