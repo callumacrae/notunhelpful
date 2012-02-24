@@ -136,6 +136,19 @@ socket.on('data', function (data) {
 						}, 300000);
 					}
 				}
+			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) MODE ([^ ]+) (?:\+[a-z]+)?\-[a-z]*o[a-z]*(?:\+[a-z]+)? ([^ ]+)$/.exec(data)) {
+				if (isBotOrOwner(info[4])) {
+					if (isOwner(info[4]) && info[1] !== info[4]) {
+						socket.write('MODE ' + info[3] + ' +o ' + info[4] + '\n', 'ascii');
+					}
+
+					if (!isBotOrOwner(info[1], info[2])) {
+						socket.write('MODE ' + info[3] + ' +b *!*@' + info[2] + '\n', 'ascii');
+						setTimeout(function () {
+							socket.write('KICK ' + info[3] + ' ' + info[1] + ' :Don\'t do that\n', 'ascii');
+						}, 1000);
+					}
+				}
 			}
 		})(data[i]);
 	}

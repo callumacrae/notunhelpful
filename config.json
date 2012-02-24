@@ -1,1 +1,18 @@
-{"nick":"notunhelpful","server":{"addr":"irc.freenode.net","port":6667},"chans":["#Giffgaff"],"bots":[["otherbot","blablabla"]],"owners":[["callumacrae","69.175.32.132"]],"ops":[["callumtest","gateway/web/freenode/ip.94.197.127.35"]],"voice":[]}
+{
+	"nick": "notunhelpful",
+	"server": {
+		"addr": "irc.freenode.net",
+		"port": 6667
+	},
+	"chans": ["#Giffgaff"],
+	"bots": [
+		["otherbot", "blablabla"]
+	],
+	"owners": [
+		["callumacrae", "69.175.32.132"]
+	],
+	"ops": [
+	],
+	"voice": [
+	]
+}
