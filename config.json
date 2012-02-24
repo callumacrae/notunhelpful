@@ -1,12 +1,11 @@
 {
-	"nick": "bot1",
+	"nick": "notunhelpful",
 	"server": {
 		"addr": "irc.efnet.org",
 		"port": 6667
 	},
 	"chans": ["#trustnetwork"],
 	"bots": [
-		["bot1", "lynxphp.com"]
 	],
 	"owners": [
 		["nub", "69.175.32.132"]
