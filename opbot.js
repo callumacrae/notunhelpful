@@ -118,7 +118,7 @@ socket.on('data', function (data) {
 						socket.write(msg + '\n', 'ascii');
 						break;
 				}
-			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) JOIN ([^ ]+)$/.exec(data)) {
+			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) JOIN :?([^ ]+)$/.exec(data)) {
 				users[info[1].toLowerCase()] = info[2];
 				if (isOp(info[1], info[2]) || isBot(info[1], info[2])) {
 					socket.write('MODE ' + info[3] + ' +o ' + info[1] + '\n', 'ascii');

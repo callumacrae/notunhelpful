@@ -1,5 +1,5 @@
 {
-	"nick": "notunhelpful",
+	"nick": "Noyan",
 	"server": {
 		"addr": "irc.efnet.org",
 		"port": 6667
@@ -8,7 +8,7 @@
 	"bots": [
 	],
 	"owners": [
-		["nub", "69.175.32.132"]
+		["nub", "lynxphp.com"]
 	],
 	"ops": [
 	],
