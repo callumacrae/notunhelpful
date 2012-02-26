@@ -55,9 +55,6 @@ socket.on('data', function (data) {
 		data[i] && (function (data) {
 			var i, info, mode, msg, op;
 
-			// Debug:
-			console.log(data);
-
 			if (info = /^PING :(.+)$/.exec(data)) {
 				socket.write('PONG :' + info[1] + '\n', 'ascii');
 			} else if (info = /^:([^ ]+)![^ ]+@([^ ]+) PRIVMSG ([^ ]+) :!([^ ]+)(?: ([^ ]+))?$/.exec(data)) {
